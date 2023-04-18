@@ -1,0 +1,33 @@
+#  Template NodeJS build
+
+#  This template allows you to validate your NodeJS code.
+#  The workflow allows running tests and code linting on the default branch.
+
+image: node:16
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          name: install npm front and run build
+          script:
+            - cd front/
+            - npm install
+            - npm run build
+            - ls -al
+      - step:
+          name: install npm back and run build
+          script:
+            - cd back/
+            - npm install
+            - npm run build
+            - ls -al
+      - step:
+          name: merge into release
+          script:
+            - git fetch
+            - git checkout -b release/1.0.0
+            - git checkout develop  front/public/build/ front/public/icons/ back/public/build/ includes/ index.php
+            - git add front/public/build/ front/public/icons/ back/public/build/ includes/ index.php
+            - git merge develop
+            - git push origin release/1.0.0 --force
